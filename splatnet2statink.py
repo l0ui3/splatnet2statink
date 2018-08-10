@@ -383,7 +383,12 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	except KeyboardInterrupt:
 		print("\nChecking to see if there are unuploaded battles before exiting...")
 		data = load_json(False) # so much repeated code
-		results = data["results"]
+
+		try:
+			results = data["results"]
+		except KeyError:
+			pass # prevent program terminated from `results` key not found error
+
 		foundany = False
 		for i, result in reversed(list(enumerate(results))):
 				if int(result["battle_number"]) not in battles:
