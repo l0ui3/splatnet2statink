@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.1.6"
+A_VERSION = "1.1.7"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -992,7 +992,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 			payload["fest_exp"] = fest_rank_rollover + fest_exp_after - points_gained
 
 		# temp fix
-		if payload["fest_exp"] < 0:
+		if payload["fest_exp"] and payload["fest_exp"] < 0:
 			payload["fest_exp"] = None
 
 	else: # not splatfest
