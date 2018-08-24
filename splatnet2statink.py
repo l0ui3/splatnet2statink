@@ -10,7 +10,7 @@ from builtins import zip
 from builtins import str
 from builtins import range
 from past.utils import old_div
-import os.path, argparse, sys
+import os.path, os.environ, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
 import iksm, dbs
@@ -48,6 +48,12 @@ try: # support for pre-v1.0.0 config.txts
 except:
 	SESSION_TOKEN = ""
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
+
+## ADD CONFIG FROM OS ENVIRONMENT VARIABLES
+API_KEY = os.environ['API_KEY'] if "API_KEY" in os.environ
+YOUR_COOKIE = os.environ['YOUR_COOKIE'] if "YOUR_COOKIE" in os.environ
+SESSION_TOKEN = os.environ['SESSION_TOKEN'] if "SESSION_TOKEN" in os.environ
+USER_LANG = os.environ['USER_LANG'] if "USER_LANG" in os.environ
 #########################
 
 debug = False # print out payload and exit. can use with geargrabber2.py & saving battle jsons
