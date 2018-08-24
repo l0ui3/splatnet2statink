@@ -10,7 +10,7 @@ from builtins import zip
 from builtins import str
 from builtins import range
 from past.utils import old_div
-import os.path, os.environ, argparse, sys
+import os, argparse, sys
 import requests, json, time, datetime, random, re
 import msgpack, uuid
 import iksm, dbs
