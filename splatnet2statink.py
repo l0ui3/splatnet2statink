@@ -49,11 +49,15 @@ except:
 	SESSION_TOKEN = ""
 USER_LANG     = config_data["user_lang"] # only works with your game region's supported languages
 
-## ADD CONFIG FROM OS ENVIRONMENT VARIABLES
-API_KEY = os.environ['API_KEY'] if "API_KEY" in os.environ
-YOUR_COOKIE = os.environ['YOUR_COOKIE'] if "YOUR_COOKIE" in os.environ
-SESSION_TOKEN = os.environ['SESSION_TOKEN'] if "SESSION_TOKEN" in os.environ
-USER_LANG = os.environ['USER_LANG'] if "USER_LANG" in os.environ
+## ADD CONFIG FROM OS ENVIRONMENT VARIA
+if (not API_KEY) & ("API_KEY" in os.environ):
+	API_KEY = os.environ['API_KEY']
+if (not YOUR_COOKIE) & ("YOUR_COOKIE" in os.environ):
+	YOUR_COOKIE = os.environ['YOUR_COOKIE']
+if (not SESSION_TOKEN) & ("SESSION_TOKEN" in os.environ):
+	SESSION_TOKEN = os.environ['SESSION_TOKEN']
+if (not USER_LANG) & ("USER_LANG" in os.environ):
+	USER_LANG = os.environ['USER_LANG']
 #########################
 
 debug = False # print out payload and exit. can use with geargrabber2.py & saving battle jsons
