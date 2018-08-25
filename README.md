@@ -74,6 +74,30 @@ If you wish to access SplatNet 2 from your computer rather than via the phone ap
 
 *Splatoon 2* stage rotation information (including Salmon Run) and current SplatNet gear are viewable at [https://splatoon2.ink/](https://splatoon2.ink/).
 
+## Deploy to OpenShift
+
+1. Before deploying, you have to get `stat.ink API key` and `iksm_session` first. You can get those info by running the `splatnet2statink.py` on your environment once, And those info will be written to `config.txt`
+
+2. Deploy this repo to OpenShift, you need to provide following `Environment Variables`:
+  - API_KEY
+  - YOUR_COOKIE
+  - SESSION_TOKEN
+  - USER_LANG
+
+3. Then edit deployment config file, add `command` and `args`:
+```yaml
+spec:
+  containers:
+     - command:
+         - python
+         - splatnet2statink.py
+       args:
+         - '-M'
+         - '900'
+```
+
+4. Afterward, you are ready to deploy this repo on OpenShift.
+
 ## Cookie generation (IMPORTANT)
 
 For splatnet2statink to work, a cookie known as `iksm_session` is required to access SplatNet. This cookie may be obtained automatically, using the script, or manually via the app. Please read the following sections carefully to decide whether or not you want to use automatic cookie generation.
