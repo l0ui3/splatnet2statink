@@ -351,15 +351,17 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 	mins = str(round(old_div(float(secs),60.0),2))
 	if mins[-2:] == ".0":
 		mins = mins[:-2]
-	print("Waiting for new battles... (checking every {} minutes)".format(mins))
 
 	try:
 		while True:
+			time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+			print("[{}] Waiting for new battles... (checking every {} minutes)".format(time_now, mins))
+
 			for i in range(secs, -1, -1):
-				sys.stdout.write("Press Ctrl+C to exit. {} ".format(i))
-				sys.stdout.flush()
+				# sys.stdout.write("Press Ctrl+C to exit. {} ".format(i))
+				# sys.stdout.flush()
 				time.sleep(1)
-				sys.stdout.write("\r")
+				# sys.stdout.write("\r")
 			data = load_json(False)
 			results = data["results"]
 			for i, result in reversed(list(enumerate(results))): # reversed chrono order
