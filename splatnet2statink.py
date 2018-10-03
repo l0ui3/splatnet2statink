@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 from subprocess import call
 # PIL/Pillow imported at bottom
 
-A_VERSION = "1.2.1"
+A_VERSION = "1.2.2"
 
 print("splatnet2statink v{}".format(A_VERSION))
 
@@ -62,12 +62,27 @@ if (not USER_LANG) & ("USER_LANG" in os.environ):
 
 debug = False # print out payload and exit. can use with geargrabber2.py & saving battle jsons
 
+if "app_timezone_offset" in config_data:
+	app_timezone_offset = str(config_data["app_timezone_offset"])
+else:
+	app_timezone_offset = str(int(time.timezone/60))
+
+if "app_unique_id" in config_data:
+	app_unique_id = str(config_data["app_unique_id"])
+else:
+	app_unique_id = "32449507786579989234" # random 19-20 digit token. used for splatnet store
+
+if "app_user_agent" in config_data:
+	app_user_agent = str(config_data["app_user_agent"])
+else:
+	app_user_agent = 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'
+
 app_head = {
 	'Host': 'app.splatoon2.nintendo.net',
-	'x-unique-id': '32449507786579989234', # random 19-20 digit token. used for splatnet store
+	'x-unique-id': app_unique_id,
 	'x-requested-with': 'XMLHttpRequest',
-	'x-timezone-offset': '0',
-	'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; Pixel Build/NJH47D; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36',
+	'x-timezone-offset': app_timezone_offset,
+	'User-Agent': app_user_agent,
 	'Accept': '*/*',
 	'Referer': 'https://app.splatoon2.nintendo.net/home',
 	'Accept-Encoding': 'gzip, deflate',
@@ -83,17 +98,16 @@ translate_clothing      = dbs.clothes
 translate_shoes         = dbs.shoes
 translate_ability       = dbs.abilities
 
-def custom_key_exists_and_true(key): # https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
-	'''Checks if a given custom key exists in config.txt.'''
-	if key not in ["ignore_private"]:
+def custom_key_exists(key, checkiftrue=False):
+	'''Checks if a given custom key exists in config.txt and, optionally, if it is set to true.'''
+
+	# https://github.com/frozenpandaman/splatnet2statink/wiki/custom-keys
+	if key not in ["ignore_private", "app_timezone_offset", "app_unique_id", "app_user_agent"]:
 		print("(!) checking unexpected custom key")
-	try:
-		if config_data[key].lower() == "true":
-			return True
-		else:
-			return False # key set to false
-	except:
-		return False # key doesn't exist
+	if checkiftrue:
+		return True if key in config_data and config_data[key].lower() == "true" else False
+	else:
+		return True if key in config_data else False
 
 def gen_new_cookie(reason):
 	'''Attempts to generate a new cookie in case the provided one is invalid.'''
@@ -375,7 +389,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 			results = data["results"]
 			for i, result in reversed(list(enumerate(results))): # reversed chrono order
 				if int(result["battle_number"]) not in battles:
-					if result["game_mode"]["key"] == "private" and custom_key_exists_and_true("ignore_private"):
+					if result["game_mode"]["key"] == "private" and custom_key_exists("ignore_private", True):
 						pass
 					else:
 						worl = "Won" if result["my_team_result"]["key"] == "victory" else "Lost"
@@ -413,7 +427,7 @@ def monitor_battles(s_flag, t_flag, r_flag, secs, debug):
 		foundany = False
 		for i, result in reversed(list(enumerate(results))):
 				if int(result["battle_number"]) not in battles:
-					if result["game_mode"]["key"] == "private" and custom_key_exists_and_true("ignore_private"):
+					if result["game_mode"]["key"] == "private" and custom_key_exists("ignore_private", True):
 						pass
 					else:
 						foundany = True
@@ -1178,9 +1192,9 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 	if debug:
 		print("")
 		print(json.dumps(payload).replace("'", "\'"))
-	# adding support for a custom key? add to custom_key_exists_and_true() method, and
+	# adding support for a custom key? add to custom_key_exists() method, and
 	# to "main process" section of monitor_battles, too. and the docs/wiki page of course
-	elif lobby == "private" and custom_key_exists_and_true("ignore_private"):
+	elif lobby == "private" and custom_key_exists("ignore_private", True):
 		if m_flag != -1: # monitoring mode
 			pass
 		else:
@@ -1224,6 +1238,7 @@ def post_battle(i, results, s_flag, t_flag, m_flag, sendgears, debug, ismonitor=
 
 def blackout(image_result_content, players):
 	'''Given a scoreboard image as bytes and players array, returns the blacked-out scoreboard.'''
+
 	scoreboard = Image.open(BytesIO(image_result_content)).convert("RGB")
 	draw = ImageDraw.Draw(scoreboard)
 
